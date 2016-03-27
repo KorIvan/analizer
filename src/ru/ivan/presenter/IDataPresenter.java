@@ -86,6 +86,8 @@ public interface IDataPresenter {
 
     double getDataMin();
 
+    public void showTestData();
+
 
 
 

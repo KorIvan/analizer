@@ -23,25 +23,6 @@ public class TestAudio {
     StdAudio audio = new StdAudio();
     IDataLoader loader = new DataLoader();
 
-    public TestAudio() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     @Test
     public void createWav() {
         String pathDAT = "/home/float/Documents/test/110n1_9880528_092628.DAT";

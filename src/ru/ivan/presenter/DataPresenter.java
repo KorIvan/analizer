@@ -9,6 +9,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.AudioSystem;
@@ -69,7 +70,6 @@ public class DataPresenter implements IDataPresenter {
 
         return (int) (_model.getFullData().length / _viewer.getDiscretization());
     }
-   
 
     @Override
     public float getFrameWidthInSeconds() {
@@ -84,8 +84,6 @@ public class DataPresenter implements IDataPresenter {
 //        _model.loadIntoFrame(frame, positionInBytes);
     }
 
-    
-    
     /**
      * @return the enabledStart
      */
@@ -106,7 +104,6 @@ public class DataPresenter implements IDataPresenter {
         float position = (float) _viewer.getFramePosition() / _viewer.getDiscretization();
         return position;
     }
-
 
     @Override
     public void createWav() {
@@ -183,10 +180,10 @@ public class DataPresenter implements IDataPresenter {
 
     @Override
     public double[] getFrameEnergy(int position, int frame, int window) {
-     //!!!
+        //!!!
         //double[] scaled = _math.scaleToShort(Arrays.copyOfRange(_model.getFullData(), position, position + frame), _model.getMin(), _model.getMax());
-       // return _math.calculateEnergy(scaled, window);
-                      return _math.calculateEnergy(Arrays.copyOfRange(_model.getFullData(), position, position + frame), window);
+        // return _math.calculateEnergy(scaled, window);
+        return _math.calculateEnergy(Arrays.copyOfRange(_model.getFullData(), position, position + frame), window);
 
     }
 
@@ -194,7 +191,7 @@ public class DataPresenter implements IDataPresenter {
     public double[] getFullFrameEnergy(int window) {
 //!!!        
 //double[] energy = _math.calculateEnergy(_math.scaleToShort(_model.getFullData(), _model.getMin(), _model.getMax()), window);
-                double[] energy = _math.calculateEnergy(_model.getFullData(), window);
+        double[] energy = _math.calculateEnergy(_model.getFullData(), window);
 
         double[] minAndMax = _math.searchMinMax(energy);
         double meanEenrgy = _math.calculateMeanEnergy(energy);
@@ -260,7 +257,6 @@ public class DataPresenter implements IDataPresenter {
         return _math.transformFourier(getFrameData(position, frame));
     }
 
-
     @Override
     public Image drawFullSpectrogram(double frequencyLimit, int window, int limit) {
         double[][] specSFT = doSFTForFullSpectrogram(window);
@@ -303,6 +299,31 @@ public class DataPresenter implements IDataPresenter {
 
     public double getDataMax() {
         return _model.getMax() * LIMIT_CONST;
+    }
+
+    @Override
+    public void showTestData() {
+        double freq1 = 45;
+        double freq2 = 170;
+        double freq3 = 870;
+        double ampl1 = 3;
+        double ampl2 = 1.2;
+        double ampl3 = 0.7;
+         Random noise = new Random();
+        int N=1024;
+        double[][] signal = new double[16768][N];
+        for (int i = 0; i < signal.length; i++) {
+            for (int j = 0; j < signal[0].length; j++) {
+                {
+                    signal[i][j] = ampl1 * Math.sin(2 * Math.PI * freq1 * j*1/N)
+                            + ampl2  * Math.sin(2 * Math.PI * freq2* j*1/N)
+                            + ampl3  * Math.sin(2 * Math.PI * freq3  * j*1/N);
+//                    + noiseAmpl * 2 * (0.5 - noise.nextDouble());
+                    //System.out.println(signal[i][j]);
+                }
+            }
+        }
+       
     }
 
 }

@@ -21,6 +21,7 @@ public interface IMathOperations {
 
 
     double[] HanningWindow(double[] signalIn, int size);
+    double[] HammingWindow(double[] signalIn, int size);
 
     double[] transformFourier(double[] SFT);
 

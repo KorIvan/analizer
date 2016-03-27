@@ -80,9 +80,17 @@ public class MathOperations implements IMathOperations {
     public double[] HanningWindow(double[] signalIn, int size) {
         double[] toFFT = new double[size];
         for (int i = 0; i < size; i++) {
-            int j = i; // j = index into Hann window function
-            toFFT[i] = (signalIn[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * j / size)));
+            toFFT[i] = (signalIn[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / (size-1))));
 
+        }
+        return toFFT;
+    }
+    
+    @Override
+    public double[] HammingWindow(double[] signalIn, int size) {
+        double[] toFFT = new double[size];
+        for (int i = 0; i < size; i++) {
+                        toFFT[i] = (signalIn[i] * (0.53836 -0.46164*Math.cos(2.0 * Math.PI * i / (size-1))));
         }
         return toFFT;
     }
