@@ -47,5 +47,9 @@ public interface IDataView {
     String getTypeOfScaling();
 
     void setSliderSpectrogram(double maxValue);
+
+    public String getTransformationType();
+
+    String getWindowFunction();
     
 }

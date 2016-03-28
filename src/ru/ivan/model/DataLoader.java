@@ -336,5 +336,10 @@ public class DataLoader implements IDataLoader {
         this.meanEnergy = meanEnergy;
     }
 
+    @Override
+    public void setFullData(double[] signal) {
+        array=signal;
+    }
+
     
 }

@@ -25,26 +25,6 @@ public interface IMathOperations {
 
     double[] transformFourier(double[] SFT);
 
-    //    @Override
-    //    public short[] convertToShort(float[] arrayToConvert) {
-    //        short[] output = new short[arrayToConvert.length];
-    //        for (int i = 0; i < output.length; i++) {
-    //            output[i] = (short) (s * (arrayToConvert[i] - min) / (max - min) - s / 2);
-    //            //System.out.println(output[i]);
-    //        }
-    //        return output;
-    //    }
-    //
-    //    @Override
-    //    public short[] convertToShort(double[] arrayToConvert) {
-    //        short[] output = new short[arrayToConvert.length];
-    //        for (int i = 0; i < output.length; i++) {
-    //            output[i] = (short) (s * (arrayToConvert[i] - min) / (max - min) - s / 2);
-    //            //System.out.println(output[i]);
-    //        }
-    //        return output;
-    //    }
-
     double[] calculateEnergy(double[] input,int window);
 
     public double[] scaleToShort(double[] data, double min, double max);

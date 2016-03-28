@@ -226,12 +226,27 @@ public class DataPresenter implements IDataPresenter {
         return _spectrogram.getSpectrogram();
     }
 
-    private double[][] doSFTForSpectrogram(int position, int frame, int window) {
-
+    private double[][] doWaveletTransform(int position, int frame, int window) {
         double[][] dataForSpectrogram = new double[frame / window * 2][];
         for (int j = 0; j < dataForSpectrogram.length; j++) {
             double[] dataSource = Arrays.copyOfRange(_model.getFullData(), position, position + window);
             dataForSpectrogram[j] = _math.transformFourier(_math.HanningWindow(dataSource, dataSource.length));
+            position += window / 2;
+        }
+        return dataForSpectrogram;
+    }
+
+    private double[][] doSFTForSpectrogram(int position, int frame, int window) {
+        String windowFunction = _viewer.getWindowFunction();
+        double[][] dataForSpectrogram = new double[frame / window * 2][];
+        for (int j = 0; j < dataForSpectrogram.length; j++) {
+            double[] dataSource = Arrays.copyOfRange(_model.getFullData(), position, position + window);
+            dataForSpectrogram[j] = null;
+            if (windowFunction.equalsIgnoreCase("Hann")) {
+                dataForSpectrogram[j] = _math.transformFourier(_math.HanningWindow(dataSource, dataSource.length));
+            } else if (windowFunction.equalsIgnoreCase("Hamming")) {
+                dataForSpectrogram[j] = _math.transformFourier(_math.HammingWindow(dataSource, dataSource.length));
+            }
             position += window / 2;
         }
         return dataForSpectrogram;
@@ -259,18 +274,23 @@ public class DataPresenter implements IDataPresenter {
 
     @Override
     public Image drawFullSpectrogram(double frequencyLimit, int window, int limit) {
-        double[][] specSFT = doSFTForFullSpectrogram(window);
-        double[][] data = new double[specSFT.length][(int) (specSFT[0].length * frequencyLimit)];
-//        System.out.println("length must be "+(int) (specSFT[0].length * frequencyLimit));
-//        System.out.println("temp length "+specSFT[0].length+"temp.length "+specSFT.length);
+        double[][] transformed = null;
+        if (_viewer.getTransformationType().equals("fourier")) {
+            transformed = doSFTForFullSpectrogram(window);
+        }
+        if (_viewer.getTransformationType().equals("wavelet")) {
+        }
+        double[][] data = new double[transformed.length][(int) (transformed[0].length * frequencyLimit)];
+//        System.out.println("length must be "+(int) (transformed[0].length * frequencyLimit));
+//        System.out.println("temp length "+transformed[0].length+"temp.length "+transformed.length);
 //        System.out.println("data[0] length "+data[0].length+" data.length "+data.length);
         double limitDouble = 1.0 * limit / LIMIT_CONST;
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[0].length; j++) {
-                if (specSFT[i][j] >= limitDouble) {
+                if (transformed[i][j] >= limitDouble) {
                     data[i][j] = limitDouble;
                 } else {
-                    data[i][j] = specSFT[i][j];
+                    data[i][j] = transformed[i][j];
                 }
             }
         }
@@ -303,27 +323,26 @@ public class DataPresenter implements IDataPresenter {
 
     @Override
     public void showTestData() {
-        double freq1 = 45;
-        double freq2 = 170;
-        double freq3 = 870;
-        double ampl1 = 3;
+        double freq1 = 50;
+        double freq2 = 250;
+        double freq3 = 750;
+        double ampl1 = 2;
         double ampl2 = 1.2;
-        double ampl3 = 0.7;
-         Random noise = new Random();
-        int N=1024;
-        double[][] signal = new double[16768][N];
+        double ampl3 = 1.5;
+        Random noise = new Random();
+        int N = 5000;
+        double[] signal = new double[32768];
         for (int i = 0; i < signal.length; i++) {
-            for (int j = 0; j < signal[0].length; j++) {
-                {
-                    signal[i][j] = ampl1 * Math.sin(2 * Math.PI * freq1 * j*1/N)
-                            + ampl2  * Math.sin(2 * Math.PI * freq2* j*1/N)
-                            + ampl3  * Math.sin(2 * Math.PI * freq3  * j*1/N);
+
+            signal[i] = ampl1 * Math.sin(2 * Math.PI * freq1 * i * 1.0 / N)
+                    + ampl2 * Math.sin(2 * Math.PI * freq2 * i * 1.0 / N)
+                    + ampl3 * Math.sin(2 * Math.PI * freq3 * i * 1.0 / N);
 //                    + noiseAmpl * 2 * (0.5 - noise.nextDouble());
-                    //System.out.println(signal[i][j]);
-                }
-            }
+            //System.out.println(signal[i][j]);
+
         }
-       
+        _model.setFullData(signal);
+
     }
 
 }

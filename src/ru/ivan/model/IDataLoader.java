@@ -73,4 +73,12 @@ void loadData(String path);
      */
     void setMeanEnergy(double meanEnergy);
 
+    /**
+     *
+     * @param signal
+     * @deprecated
+     */
+    @Deprecated
+    public void setFullData(double[] signal);
+
 }

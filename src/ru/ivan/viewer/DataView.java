@@ -62,6 +62,7 @@ public class DataView extends javax.swing.JFrame implements IDataView {
         fileChooser = new javax.swing.JFileChooser();
         fftOrEnSpectrum = new javax.swing.ButtonGroup();
         scaling = new javax.swing.ButtonGroup();
+        transformation = new javax.swing.ButtonGroup();
         jFileChooser1 = new javax.swing.JFileChooser();
         refresh = new javax.swing.JButton();
         load = new javax.swing.JButton();
@@ -78,16 +79,18 @@ public class DataView extends javax.swing.JFrame implements IDataView {
         autoscale = new javax.swing.JRadioButton();
         meanValue = new javax.swing.JRadioButton();
         maxValue = new javax.swing.JRadioButton();
+        jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         window = new javax.swing.JLabel();
         spinnerWindowWidth = new javax.swing.JSpinner();
-        spinnerHeigthOfSpectrogram = new javax.swing.JSpinner();
-        jLabel4 = new javax.swing.JLabel();
         spinnerLimitFreq = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
         sliderSpectrogram = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
-        testData = new javax.swing.JButton();
+        fourier = new javax.swing.JRadioButton();
+        wavelet = new javax.swing.JRadioButton();
+        windowFunction = new javax.swing.JComboBox<>();
+        llabelWindowFunction = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         fileLengthSec = new javax.swing.JLabel();
         stop = new javax.swing.JButton();
@@ -228,6 +231,13 @@ public class DataView extends javax.swing.JFrame implements IDataView {
             }
         });
 
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
         controlPanel.setLayout(controlPanelLayout);
         controlPanelLayout.setHorizontalGroup(
@@ -240,19 +250,22 @@ public class DataView extends javax.swing.JFrame implements IDataView {
                         .addContainerGap())
                     .addGroup(controlPanelLayout.createSequentialGroup()
                         .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(frame)
                             .addGroup(controlPanelLayout.createSequentialGroup()
-                                .addComponent(spinnerFrameWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(frameWidthInSecondsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(44, 44, 44)
-                        .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(spinnerDiscretization, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(41, 41, 41)
-                        .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(showFrequencySpectrum)
-                            .addComponent(showEnergySpectrum))
+                                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(frame)
+                                    .addGroup(controlPanelLayout.createSequentialGroup()
+                                        .addComponent(spinnerFrameWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(frameWidthInSecondsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(44, 44, 44)
+                                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(spinnerDiscretization, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(41, 41, 41)
+                                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(showFrequencySpectrum)
+                                    .addComponent(showEnergySpectrum)))
+                            .addComponent(jButton1))
                         .addGap(10, 10, 10)
                         .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(meanValue)
@@ -277,7 +290,9 @@ public class DataView extends javax.swing.JFrame implements IDataView {
                     .addComponent(frameWidthInSecondsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(meanValue))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(maxValue)
+                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(maxValue)
+                    .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(chosenFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -292,11 +307,6 @@ public class DataView extends javax.swing.JFrame implements IDataView {
         spinnerWindowWidth.setEnabled(false);
         spinnerWindowWidth.setValue(256
         );
-
-        spinnerHeigthOfSpectrogram.setModel(new javax.swing.SpinnerNumberModel(200, 10, 500, 10));
-        spinnerHeigthOfSpectrogram.setName(""); // NOI18N
-
-        jLabel4.setText("Размер изображения спектрограммы");
 
         spinnerLimitFreq.setModel(new SpinnerNumberModel(getSpinnerFreqLimit(),new Integer(5),new Integer(50000),new Integer(50))
         );
@@ -326,12 +336,19 @@ public class DataView extends javax.swing.JFrame implements IDataView {
         jLabel1.setToolTipText("");
         jLabel1.setName(""); // NOI18N
 
-        testData.setText("Test Data");
-        testData.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                testDataActionPerformed(evt);
-            }
-        });
+        transformation.add(fourier);
+        fourier.setSelected(true);
+        fourier.setText("Преобразование Фурье");
+        fourier.setActionCommand("fourier");
+
+        transformation.add(wavelet);
+        wavelet.setText("Вейвлет преобразование");
+        wavelet.setActionCommand("wavelet");
+
+        windowFunction.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hann", "Hamming" }));
+
+        llabelWindowFunction.setLabelFor(windowFunction);
+        llabelWindowFunction.setText("Функция окна");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -348,51 +365,51 @@ public class DataView extends javax.swing.JFrame implements IDataView {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(spinnerWindowWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(window))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(wavelet)
+                            .addComponent(fourier))
+                        .addGap(43, 43, 43)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel4)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(spinnerHeigthOfSpectrogram, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(testData))))
+                            .addComponent(llabelWindowFunction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(windowFunction, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sliderSpectrogram, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(530, Short.MAX_VALUE))
+                .addContainerGap(430, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(window)
+                                    .addGap(5, 5, 5))
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(llabelWindowFunction)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(spinnerWindowWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(wavelet)
+                                    .addComponent(windowFunction, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(jLabel5)
+                            .addGap(5, 5, 5)
+                            .addComponent(spinnerLimitFreq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(fourier))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(window)
-                                .addGap(5, 5, 5)
-                                .addComponent(spinnerWindowWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(5, 5, 5)
-                                .addComponent(spinnerLimitFreq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(0, 4, Short.MAX_VALUE))
-                            .addComponent(sliderSpectrogram, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(spinnerHeigthOfSpectrogram, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(testData)
-                                .addGap(23, 23, 23))))))
+                        .addComponent(jLabel1)
+                        .addGap(0, 3, Short.MAX_VALUE))
+                    .addComponent(sliderSpectrogram, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Настройки спектрограммы", jPanel2);
@@ -551,6 +568,12 @@ public class DataView extends javax.swing.JFrame implements IDataView {
         jSplitPane2.setLeftComponent(fullEnergy);
 
         fullSpectrogram.setLayout(new java.awt.BorderLayout());
+
+        labelForFullSpectr.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                labelForFullSpectrMouseClicked(evt);
+            }
+        });
         fullSpectrogram.add(labelForFullSpectr, java.awt.BorderLayout.CENTER);
 
         labelForFullScale.setMaximumSize(new java.awt.Dimension(35, 14));
@@ -658,7 +681,7 @@ public class DataView extends javax.swing.JFrame implements IDataView {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTabbedPane1)
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addGap(80, 80, 80))
                     .addComponent(jTabbedPane2)
                     .addComponent(seekSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -690,7 +713,12 @@ public class DataView extends javax.swing.JFrame implements IDataView {
 
     private void openItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openItemActionPerformed
         fileChooser.showOpenDialog(this);
-        String path = fileChooser.getSelectedFile().getAbsolutePath();
+        String path = null;
+        if (fileChooser.getSelectedFile() != null) {
+            path = fileChooser.getSelectedFile().getAbsolutePath();
+        } else {
+            return;
+        }
         _presenter.setEnabledStart(path);
         if (_presenter.isEnabledStart()) {
 
@@ -733,9 +761,9 @@ public class DataView extends javax.swing.JFrame implements IDataView {
         _audio = _presenter.getWav();
         setTimer();
         refreshAll();
-        sliderSpectrogram.setMaximum((int)_presenter.getDataMax());
-                sliderSpectrogram.setMinimum((int)_presenter.getDataMin());
-                sliderSpectrogram.setValue((int)_presenter.getDataMax());
+        sliderSpectrogram.setMaximum((int) _presenter.getDataMax());
+        sliderSpectrogram.setMinimum((int) _presenter.getDataMin());
+        sliderSpectrogram.setValue((int) _presenter.getDataMax());
 
     }//GEN-LAST:event_loadActionPerformed
 
@@ -750,10 +778,6 @@ public class DataView extends javax.swing.JFrame implements IDataView {
             ((Clip) _audio).setFramePosition(value);
         }
     }//GEN-LAST:event_seekSliderStateChanged
-
-    private void labelForFrameSpectrMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelForFrameSpectrMouseClicked
-
-    }//GEN-LAST:event_labelForFrameSpectrMouseClicked
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
 
@@ -778,11 +802,10 @@ public class DataView extends javax.swing.JFrame implements IDataView {
         _presenter.changeFrame();
     }//GEN-LAST:event_backwardActionPerformed
 
-    private void spectrogramMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spectrogramMouseClicked
-
-    }//GEN-LAST:event_spectrogramMouseClicked
-
     private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
+        System.out.println(jScrollPane1.getHeight() + " scrollpanel1 heght");
+        System.out.println(spectrogram.getHeight() + " spectrogram heght");
+
         _presenter.changeFrame();
         if (_frameTimer.isRunning()) {
             _frameTimer.stop();
@@ -873,12 +896,20 @@ public class DataView extends javax.swing.JFrame implements IDataView {
     }//GEN-LAST:event_chosenFileTextFieldActionPerformed
 
     private void spinnerFrameWidthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinnerFrameWidthStateChanged
-        refreshAll();
+        int prevValue = Integer.parseInt(spinnerFrameWidth.getValue().toString());
         if (Integer.valueOf(spinnerFrameWidth.getValue().toString()) % 2 != 0) {
             JOptionPane.showMessageDialog(rootPane, "Длина фрема должна быть кратна 2", "Неверная длина фрейма", JOptionPane.INFORMATION_MESSAGE);
+            spinnerFrameWidth.setValue(prevValue);
+            return;
         }
+        if (prevValue < 1024) {
+            spinnerFrameWidth.setValue(1024);
+        }
+        int powerOf2 = (int) Math.round(Math.log(prevValue) / Math.log(2));
+        spinnerFrameWidth.setValue((int) Math.pow(2, powerOf2));
         _presenter.changeFrame();
         frameWidthInSecondsTextField.setText(_presenter.getFrameWidthInSeconds() + " с");
+        refreshAll();
     }//GEN-LAST:event_spinnerFrameWidthStateChanged
 
     private void frameWidthInSecondsTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_frameWidthInSecondsTextFieldActionPerformed
@@ -886,16 +917,35 @@ public class DataView extends javax.swing.JFrame implements IDataView {
     }//GEN-LAST:event_frameWidthInSecondsTextFieldActionPerformed
 
     private void spectrogramPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_spectrogramPropertyChange
-if (_presenter!=null){
-            buildSpectrogram();
-        buildLimitedFullSpectrogram();
-        drawScale();
-}
+        if (_presenter != null) {
+            /*buildSpectrogram();
+            buildLimitedFullSpectrogram();
+            drawScale();*/
+        }
     }//GEN-LAST:event_spectrogramPropertyChange
 
-    private void testDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testDataActionPerformed
-        _presenter.showTestData();
-    }//GEN-LAST:event_testDataActionPerformed
+    private void spectrogramMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spectrogramMouseClicked
+
+    }//GEN-LAST:event_spectrogramMouseClicked
+
+    private void labelForFrameSpectrMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelForFrameSpectrMouseClicked
+        refreshTab1();
+    }//GEN-LAST:event_labelForFrameSpectrMouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        System.out.println("jScrollPane1 " + jScrollPane1.getHeight());
+        System.out.println("spectrogram " + spectrogram.getHeight());
+        System.out.println("cursor " + cursor.getHeight());
+        System.out.println("laelForSpectr " + labelForFrameSpectr.getHeight());
+        System.out.println(transformation.getSelection().getActionCommand());
+        System.out.println(windowFunction.getSelectedItem());
+
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void labelForFullSpectrMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelForFullSpectrMouseClicked
+        refreshFullGraph();
+    }//GEN-LAST:event_labelForFullSpectrMouseClicked
     private void refreshFullGraph() {
         buildFullEnergyGraph();
         buildLimitedFullSpectrogram();
@@ -951,14 +1001,15 @@ if (_presenter!=null){
     private javax.swing.JTextField fileLengthSecTextFiled;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem forward;
+    private javax.swing.JRadioButton fourier;
     private javax.swing.JLabel frame;
     private javax.swing.JTextField frameWidthInSecondsTextField;
     private javax.swing.JPanel fullEnergy;
     private javax.swing.JPanel fullSpectrogram;
+    private javax.swing.JButton jButton1;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
@@ -978,6 +1029,7 @@ if (_presenter!=null){
     private javax.swing.JLabel labelForFrameSpectr;
     private javax.swing.JLabel labelForFullScale;
     private javax.swing.JLabel labelForFullSpectr;
+    private javax.swing.JLabel llabelWindowFunction;
     private javax.swing.JButton load;
     private javax.swing.JRadioButton maxValue;
     private javax.swing.JRadioButton meanValue;
@@ -997,13 +1049,14 @@ if (_presenter!=null){
     private javax.swing.JPanel spectrogram;
     private javax.swing.JSpinner spinnerDiscretization;
     private javax.swing.JSpinner spinnerFrameWidth;
-    private javax.swing.JSpinner spinnerHeigthOfSpectrogram;
     private javax.swing.JSpinner spinnerLimitFreq;
     private javax.swing.JSpinner spinnerWindowWidth;
     private javax.swing.JButton stop;
     private javax.swing.JMenuItem stopItem;
-    private javax.swing.JButton testData;
+    private javax.swing.ButtonGroup transformation;
+    private javax.swing.JRadioButton wavelet;
     private javax.swing.JLabel window;
+    private javax.swing.JComboBox<String> windowFunction;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -1020,7 +1073,6 @@ if (_presenter!=null){
     public int getWindowWidth() {
         return Integer.valueOf(spinnerWindowWidth.getValue().toString());
     }
-
 
     @Override
     public int getFramePosition() {
@@ -1105,7 +1157,7 @@ if (_presenter!=null){
     }
 
     private void drawScale() {
-        int specHeigth = Integer.valueOf(spectrogram.getHeight()-cursor.getHeight());
+        int specHeigth = Integer.valueOf(spectrogram.getHeight() - cursor.getHeight() / 2);
         float limit = Integer.valueOf(spinnerLimitFreq.getValue().toString());
         int frameWidth = Integer.valueOf(spinnerFrameWidth.getValue().toString());
         BufferedImage scale = new BufferedImage(SCALE_OF_SPECT, specHeigth, BufferedImage.TYPE_INT_RGB);
@@ -1147,6 +1199,7 @@ if (_presenter!=null){
             buildFourierTransformGraph();
         }
         buildSpectrogram();
+        drawScale();
         calculateTimePosition();
 
     }
@@ -1234,13 +1287,11 @@ if (_presenter!=null){
                 int nextValueCursor = Math.min(maxFramePositionCursor, currentValueCursor + shiftCursor);
                 if (currentValueCursor < maxFramePositionCursor) {
                     DataView.this.cursor.setValue(nextValueCursor);
+                } else if (currentValue < maxFramePosition) {
+                    cursor.setValue(0);
+                    DataView.this.seekSlider.setValue(nextValue);
                 } else {
-                    if (currentValue < maxFramePosition) {
-                        cursor.setValue(0);
-                        DataView.this.seekSlider.setValue(nextValue);
-                    } else {
-                        DataView.this._frameTimer.stop();
-                    }
+                    DataView.this._frameTimer.stop();
                 }
             }
         });
@@ -1415,7 +1466,7 @@ if (_presenter!=null){
     public void buildFullEnergyGraph() {
         CategoryTableXYDataset serie = new CategoryTableXYDataset();
         serie.setNotify(false);
-        double step = 1.0 / getDiscretization()*Integer.parseInt(spinnerWindowWidth.getValue().toString())/2;
+        double step = 1.0 / getDiscretization() * Integer.parseInt(spinnerWindowWidth.getValue().toString()) / 2;
         double startPosition = 0;
         double[] data = _presenter.getFullFrameEnergy(getWindowWidth());
         for (int i = 0; i < data.length; i++) {
@@ -1442,7 +1493,7 @@ if (_presenter!=null){
                 break;
         }
         org.jfree.chart.axis.ValueAxis xAxis = plot.getDomainAxis();
-        double start =0;
+        double start = 0;
         double max = _presenter.getFullData().length / Double.valueOf(spinnerDiscretization.getValue().toString());
         xAxis.setRange(start, max);
         ChartPanel chartPanel = new ChartPanel(chart);
@@ -1523,8 +1574,11 @@ if (_presenter!=null){
     }
 
     void buildSpectrogram() {
-        int spectHeigth = Integer.valueOf(spectrogram.getHeight()-cursor.getHeight());
-        int spectWidth = spectrogram.getWidth() - SCALE_OF_SPECT ;
+        int cursorHeight = 19;
+        spectrogram.setSize(spectrogram.getWidth(), jScrollPane1.getHeight() - cursorHeight);
+        int spectHeigth = Integer.valueOf(spectrogram.getHeight() - cursorHeight / 2);
+
+        int spectWidth = spectrogram.getWidth() - SCALE_OF_SPECT;
         double limit = Double.valueOf(spinnerLimitFreq.getValue().toString()) * 2
                 / Double.valueOf(spinnerDiscretization.getValue().toString());
         Image spectrogram = _presenter.getSpectrogram(getFramePosition(), getFrameWidth(), getWindowWidth(), limit).getScaledInstance(spectWidth, spectHeigth, Image.SCALE_FAST);
@@ -1545,7 +1599,9 @@ if (_presenter!=null){
     void buildLimitedFullSpectrogram() {
         double limit = Double.valueOf(spinnerLimitFreq.getValue().toString()) * 2
                 / Double.valueOf(spinnerDiscretization.getValue().toString());
-        int spectHeigth = Integer.valueOf(spectrogram.getHeight()-cursor.getHeight());
+        int cursorHeight = 19;
+        spectrogram.setSize(spectrogram.getWidth(), jScrollPane1.getHeight() - cursorHeight);
+        int spectHeigth = Integer.valueOf(spectrogram.getHeight() - cursorHeight / 2);
         int spectWidth = spectrogram.getWidth() - SCALE_OF_SPECT;
         Image spectrogram = _presenter.drawFullSpectrogram(limit, getWindowWidth(), sliderSpectrogram.getValue()).getScaledInstance(spectWidth, spectHeigth, Image.SCALE_FAST);
         labelForFullSpectr.setIcon(new ImageIcon(spectrogram));
@@ -1557,5 +1613,13 @@ if (_presenter!=null){
 
     private void calculateTimePosition() {
         positionInFileSecTextField.setText("" + (seekSlider.getValue() / Double.valueOf(spinnerDiscretization.getValue().toString())));
+    }
+
+    public String getTransformationType() {
+        return transformation.getSelection().getActionCommand();
+    }
+
+    public String getWindowFunction() {
+        return windowFunction.getSelectedItem().toString();
     }
 }
