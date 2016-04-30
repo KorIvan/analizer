@@ -16,6 +16,9 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.JPanel;
+import jwave.Transform;
+import jwave.transforms.FastWaveletTransform;
+import jwave.transforms.wavelets.haar.Haar1;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -226,11 +229,17 @@ public class DataPresenter implements IDataPresenter {
         return _spectrogram.getSpectrogram();
     }
 
-    private double[][] doWaveletTransform(int position, int frame, int window) {
+    private double[][] doWaveletTransformFullSpectrogram(int window) {
+        Transform t = new Transform(new FastWaveletTransform(new Haar1()));
+        int position = 0;
+        int frame = _model.getFullData().length;
         double[][] dataForSpectrogram = new double[frame / window * 2][];
         for (int j = 0; j < dataForSpectrogram.length; j++) {
             double[] dataSource = Arrays.copyOfRange(_model.getFullData(), position, position + window);
-            dataForSpectrogram[j] = _math.transformFourier(_math.HanningWindow(dataSource, dataSource.length));
+            if (dataSource.length % 2 != 0) {
+                break;
+            }
+            dataForSpectrogram[j] = t.forward(_math.HammingWindow(dataSource, dataSource.length));
             position += window / 2;
         }
         return dataForSpectrogram;
@@ -277,8 +286,11 @@ public class DataPresenter implements IDataPresenter {
         double[][] transformed = null;
         if (_viewer.getTransformationType().equals("fourier")) {
             transformed = doSFTForFullSpectrogram(window);
-        }
-        if (_viewer.getTransformationType().equals("wavelet")) {
+        } else if (_viewer.getTransformationType().equals("wavelet")) {
+            transformed = doWaveletTransformFullSpectrogram(window);
+            System.out.println("Wavelet starnarn!!1");
+            System.out.println(transformed);
+            System.out.println("!!! " + transformed.length);
         }
         double[][] data = new double[transformed.length][(int) (transformed[0].length * frequencyLimit)];
 //        System.out.println("length must be "+(int) (transformed[0].length * frequencyLimit));
@@ -323,9 +335,9 @@ public class DataPresenter implements IDataPresenter {
 
     @Override
     public void showTestData() {
-        double freq1 = 50;
-        double freq2 = 250;
-        double freq3 = 750;
+        double freq1 = 200;
+        double freq2 = 400;
+        double freq3 = 800;
         double ampl1 = 2;
         double ampl2 = 1.2;
         double ampl3 = 1.5;
@@ -343,6 +355,42 @@ public class DataPresenter implements IDataPresenter {
         }
         _model.setFullData(signal);
 
+    }
+
+    @Override
+    public void showTestData2() {
+double freq1 = 200;
+        double freq2 = 400;
+        double freq3 = 800;
+        double ampl1 = 2;
+        double ampl2 = 1.2;
+        double ampl3 = 1.2;
+        Random noise = new Random();
+        int N = 5000;
+        double[] signal = new double[32768];
+        double v1=0;
+        double v2=0;
+        double v3=ampl3;
+        
+        for (int i = 0; i < signal.length; i++) {
+            double a1=v1;
+            double a2=v2;
+            double a3=v3;
+            double f3=freq3;
+            if (v1>=ampl1)
+                a1=ampl1;
+            if (v2>=ampl2)
+                a2=ampl2;
+            if (v3<=0)
+                a3=0;
+            if (freq3<=450)
+                f3=450;
+            signal[i] = a1 * Math.sin(2 * Math.PI * freq1 * i * 1.0 / N)
+                    + a2 * Math.sin(2 * Math.PI * freq2 * i * 1.0 / N)
+                    + a3 * Math.sin(2 * Math.PI * f3 * i * 1.0 / N);
+            v1+=0.00001;v2+=0.00005;v3-=0.00004;freq3-=0.01;
+        }
+        _model.setFullData(signal);
     }
 
 }

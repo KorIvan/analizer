@@ -88,6 +88,8 @@ public interface IDataPresenter {
 
     public void showTestData();
 
+    public void showTestData2();
+
 
 
 
