@@ -31,5 +31,8 @@ public interface IMathOperations {
     public double scaleValue(double value, double min, double max);
 
     public double calculateMeanEnergy(double[] data);
+
+    double[] lpf(double cutFreq, double length, int m);
+    double[] convolve(double[] d1, double[] d2);
     
 }

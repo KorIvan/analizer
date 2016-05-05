@@ -5,9 +5,11 @@
  */
 package ru.ivan.viewer;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -17,7 +19,9 @@ import java.util.TimerTask;
 import javax.sound.midi.Sequence;
 import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
@@ -28,6 +32,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.CategoryTableXYDataset;
+import ru.ivan.model.TestData;
 import ru.ivan.presenter.*;
 import ru.ivan.viewer.IDataView;
 
@@ -99,6 +104,7 @@ public class DataView extends javax.swing.JFrame implements IDataView {
         FourierTest = new javax.swing.JButton();
         WaveletTest = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         fileLengthSec = new javax.swing.JLabel();
         stop = new javax.swing.JButton();
@@ -436,6 +442,13 @@ public class DataView extends javax.swing.JFrame implements IDataView {
             }
         });
 
+        jButton2.setText("ShowTestData");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout testPanelLayout = new javax.swing.GroupLayout(testPanel);
         testPanel.setLayout(testPanelLayout);
         testPanelLayout.setHorizontalGroup(
@@ -443,12 +456,13 @@ public class DataView extends javax.swing.JFrame implements IDataView {
             .addGroup(testPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(testPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(testPanelLayout.createSequentialGroup()
-                        .addComponent(FourierTest)
-                        .addGap(37, 37, 37)
-                        .addComponent(jButton1))
+                    .addComponent(FourierTest)
                     .addComponent(WaveletTest))
-                .addContainerGap(886, Short.MAX_VALUE))
+                .addGap(31, 31, 31)
+                .addGroup(testPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1))
+                .addContainerGap(843, Short.MAX_VALUE))
         );
         testPanelLayout.setVerticalGroup(
             testPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -458,7 +472,9 @@ public class DataView extends javax.swing.JFrame implements IDataView {
                     .addComponent(FourierTest)
                     .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(WaveletTest)
+                .addGroup(testPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(WaveletTest)
+                    .addComponent(jButton2))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
 
@@ -1008,6 +1024,59 @@ public class DataView extends javax.swing.JFrame implements IDataView {
 buildSpectrogram();
 buildLimitedFullSpectrogram();
     }//GEN-LAST:event_waveletStateChanged
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+TestData testData = new TestData();
+        int discretization = 5000;
+        int framePosition = 0;
+        int frameWidth = 32768;
+        
+        CategoryTableXYDataset serie = new CategoryTableXYDataset();
+        serie.setNotify(false);
+        double step = 1.0 / discretization;
+        double startPosition = step * framePosition;
+        double[] data = testData.get1DSignal(100, 400, framePosition, discretization);
+        for (int i = 0; i < data.length; i++) {
+            serie.add(startPosition, i, "");
+            startPosition += step;
+            System.out.println(data[i]);
+        }
+        JFreeChart chart = ChartFactory.createXYLineChart("", "t,c", "g, м/c^2", serie);
+        chart.removeLegend();
+        chart.setAntiAlias(false);
+
+        XYPlot plot = chart.getXYPlot();
+        //plot.setRangeGridlinePaint(Color.BLACK);
+        org.jfree.chart.axis.ValueAxis yAxis = plot.getRangeAxis();
+        org.jfree.chart.axis.ValueAxis xAxis = plot.getDomainAxis();
+        double start = framePosition * 1.0 / discretization;
+        double max = start
+                + frameWidth * 1.0 / discretization;
+        xAxis.setRange(start, max);
+        ChartPanel chartPanel = new ChartPanel(chart);
+
+        JPanel p = new JPanel(new BorderLayout());
+
+        p.removeAll();
+        p.add(chartPanel);
+        p.validate();
+        //1. Create the frame.
+        JFrame frame = new JFrame("FrameDemo");
+
+//2. Optional: What happens when the frame closes?
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+//3. Create components and put them in the frame.
+//...create emptyLabel...
+        frame.getContentPane().add(new Label("olol"), BorderLayout.CENTER);
+        frame.getContentPane().add(p, BorderLayout.CENTER);
+
+//4. Size the frame.
+        frame.pack();
+
+//5. Show it.
+        frame.setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
     private void refreshFullGraph() {
         buildFullEnergyGraph();
         buildLimitedFullSpectrogram();
@@ -1071,6 +1140,7 @@ buildLimitedFullSpectrogram();
     private javax.swing.JPanel fullEnergy;
     private javax.swing.JPanel fullSpectrogram;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
@@ -1381,40 +1451,6 @@ buildLimitedFullSpectrogram();
         });
 
     }
-//    private void setTimer() {
-//        final int maxFramePosition = slider.getMaximum();
-//        final int maxFramePositionCursor = (int) (_presenter.getFrameWidthInSeconds() * 1000);
-//        cursor.setMaximum(maxFramePositionCursor);
-//        System.out.println(cursor.getMaximum() + " slider Cursor max");
-//        this._frameTimer = new Timer((20), new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-////                System.out.println("System.out.println. Action performed "+LocalTime.now());
-//                if (!_audio.isRunning()) {
-//                    _audio.start();
-//                }
-//                if (_audio.isRunning()) {
-//                    _audio.stop();
-//                }
-//                System.out.println("value " + cursor.getValue() + "; maxValue=" + cursor.getMaximum());
-//                System.out.println("frame length " + _audio.getFrameLength() + "; length in s " + _audio.getMicrosecondLength() / 1000000 + "; position in ms " + _audio.getMicrosecondPosition() / 1000000 + "; frame position " + _audio.getFramePosition());
-//
-//                int currentValueCursor = _audio.getFrameLength() % maxFramePositionCursor;
-//                System.out.println("currentValueCursor " + currentValueCursor);
-//                int currentValue = _audio.getFramePosition();
-//                if (currentValueCursor < maxFramePositionCursor) {
-//                } else {
-//                    if (currentValue < maxFramePosition) {
-////                        sliderCursor.setValue(0);
-////                        DataView.this.slider.setValue(nextValue);
-//                    } else {
-//                        DataView.this._frameTimer.stop();
-//                    }
-//                }
-//            }
-//        });
-//
-//    }
 
     @Override
     public void stopTimer() {
@@ -1443,8 +1479,10 @@ buildLimitedFullSpectrogram();
         serie.setNotify(false);
         double step = 1.0 / getDiscretization();
         double startPosition = step * getFramePosition();
-        double[] data = _presenter.getFrameData(getFramePosition(), getFrameWidth());
-        for (int i = 0; i < data.length; i++) {
+//        double[] data = _presenter.lpFilter(_presenter.getFrameData(getFramePosition(), getFrameWidth()),Double.parseDouble(spinnerLimitFreq.getValue().toString()));
+        double[] data =_presenter.getFrameData(getFramePosition(), getFrameWidth());
+        
+for (int i = 0; i < data.length; i++) {
             serie.add(startPosition, data[i], "");
             startPosition += step;
         }

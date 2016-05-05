@@ -90,8 +90,7 @@ public interface IDataPresenter {
 
     public void showTestData2();
 
-
-
+//    public double[] lpFilter(double[] input, double freqLimit);
 
 
 

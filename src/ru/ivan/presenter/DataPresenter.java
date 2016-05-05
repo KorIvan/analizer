@@ -393,4 +393,9 @@ double freq1 = 200;
         _model.setFullData(signal);
     }
 
+//    @Override
+//    public double[] lpFilter(double[] input, double freqLimit) {
+//        return _math.convolve(input,_math.lpf((int)freqLimit, _viewer.getDiscretization(), 1024));
+//    }
+
 }

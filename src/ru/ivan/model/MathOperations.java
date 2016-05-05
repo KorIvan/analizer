@@ -80,17 +80,17 @@ public class MathOperations implements IMathOperations {
     public double[] HanningWindow(double[] signalIn, int size) {
         double[] toFFT = new double[size];
         for (int i = 0; i < size; i++) {
-            toFFT[i] = (signalIn[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / (size-1))));
+            toFFT[i] = (signalIn[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / (size - 1))));
 
         }
         return toFFT;
     }
-    
+
     @Override
     public double[] HammingWindow(double[] signalIn, int size) {
         double[] toFFT = new double[size];
         for (int i = 0; i < size; i++) {
-                        toFFT[i] = (signalIn[i] * (0.53836 -0.46164*Math.cos(2.0 * Math.PI * i / (size-1))));
+            toFFT[i] = (signalIn[i] * (0.53836 - 0.46164 * Math.cos(2.0 * Math.PI * i / (size - 1))));
         }
         return toFFT;
     }
@@ -170,12 +170,67 @@ public class MathOperations implements IMathOperations {
 
     @Override
     public double calculateMeanEnergy(double[] data) {
-        double mean=0;
-        double temp=0;
-        for (int i=0; i<data.length;i++){
-            temp+=Math.pow(data[i], 2);
+        double mean = 0;
+        double temp = 0;
+        for (int i = 0; i < data.length; i++) {
+            temp += Math.pow(data[i], 2);
         }
-        mean=Math.pow(temp/data.length, 0.5);
+        mean = Math.pow(temp / data.length, 0.5);
         return mean;
+    }
+ public double[] convolve(double[] d1, double[] d2) {
+        double[] result = new double[d1.length + d2.length - 1];
+        for (int i = 0; i < result.length; i++) {
+            double temp = 0;
+            for (int j = 0; j < d1.length; ++j) {
+                int nextIndex = i - j;
+                if (nextIndex < 0) {
+                    break;
+                }
+                if (nextIndex >= d2.length) {
+                    continue;
+                }
+                temp += d1[j] * d2[nextIndex];
+            }
+            result[i] = temp;
+        }
+        return result;
+    }
+ 
+    public double[] lpf(double fCut, double dt, int m) {
+        double[] d = {0.35577019, 0.2436983, 0.07211497, 0.00630165};
+        double[] w = new double[m + 1];
+        w[0] = 2 * fCut * dt;
+        double fact = Math.PI * w[0];
+        for (int i = 1; i <= m; i++) {
+            w[i] = Math.sin(fact * i) / (Math.PI * i);
+        }
+        w[m] /= 2;
+        double sum;
+        double fact1;
+        double sumg = w[0];
+        for (int i = 1; i <= m; i++) {
+            sum = d[0];
+            fact1 = Math.PI * i / m;
+            for (int k = 1; k <= 3; k++) {
+                sum += 2 * d[k] * Math.cos(Math.PI * i * k / m);
+            }
+            w[i] *= sum;
+            sumg += 2 * w[i];
+        }
+        for (int i = 0; i <= m; i++) {
+            w[i] /= sumg;
+        }
+        //берем все элементы кроме первого в обрwатном порядке
+        double[] wR = new double[w.length];
+        for (int i = 0; i < w.length; i++) {
+            wR[i] = w[w.length - 1 - i];
+        }
+        double[] h = new double[2 * w.length - 1];
+        for (int i = 0; i < w.length; i++) {
+            h[i] = wR[i];
+            h[w.length + i - 1] = w[i];
+        }
+        return h;
     }
 }
