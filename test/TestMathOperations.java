@@ -18,9 +18,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import ru.ivan.model.IMathOperations;
-import ru.ivan.model.MathOperations;
-import ru.ivan.model.SpectrogramPanel;
+import ru.spbspu.model.IMathOperations;
+import ru.spbspu.model.MathOperations;
+import ru.spbspu.model.SpectrogramPanel;
 
 /**
  *

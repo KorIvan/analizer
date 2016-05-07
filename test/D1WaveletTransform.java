@@ -5,9 +5,22 @@
  */
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 import java.awt.Label;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import jwave.Transform;
+import jwave.exceptions.JWaveException;
+import jwave.transforms.FastWaveletTransform;
+import jwave.transforms.WaveletTransform;
+import jwave.transforms.wavelets.haar.Haar1;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -16,31 +29,51 @@ import org.jfree.data.xy.CategoryTableXYDataset;
 import org.junit.After;
 import org.junit.Test;
 import ru.spbspu.model.IMathOperations;
+import ru.spbspu.model.ISpectrogramPanel;
 import ru.spbspu.model.MathOperations;
+import ru.spbspu.model.SpectrogramPanel;
 import ru.spbspu.model.TestData;
 
 /**
  *
  * @author float
  */
-public class LowPassFilterTest {
+public class D1WaveletTransform {
 
-    public LowPassFilterTest() {
-    }
     TestData testData = new TestData();
-    int discretization = 5000;
+    int discretization = 1024;
     int framePosition = 0;
-    int frameWidth = 32768;
+    int frameWidth = 8192;
     IMathOperations math = new MathOperations();
+    ISpectrogramPanel specPanel;
 
-    @Test
-    public void test() throws InterruptedException {
+    private double[][] doWaveletTransformTest(double[] data, int window) {
+        Transform t = new Transform(new FastWaveletTransform(new Haar1()));
+        
+        int position = 0;
+        int frame = data.length;
+        double[][] dataForSpectrogram = new double[frame / window * 2][];
+        for (int j = 0; j < dataForSpectrogram.length; j++) {
+            double[] dataSource = Arrays.copyOfRange(data, position, position + window);
+            if (dataSource.length % 2 != 0) {
+                break;
+            }
+            dataForSpectrogram[j] = t.forward(math.HammingWindow(dataSource, dataSource.length));
+            position += window / 2;
+        }
+        return dataForSpectrogram;
+    }
+
+     
+   @Test
+    public void test() throws InterruptedException, JWaveException {
         CategoryTableXYDataset serie = new CategoryTableXYDataset();
         serie.setNotify(false);
         double step = 1.0 / discretization;
         double startPosition = step * framePosition;
         //100 А - 100 Гц, 50 А - 50 Гц, 25 А- 25 Гц
-        double[] data = math.convolve(math.HammingWindow(testData.get1DPolyharmSignal(4, 200, frameWidth, discretization), frameWidth), math.lpf(60, step, 1024));
+          WaveletTransform t=new FastWaveletTransform((new Haar1()));
+        double[] data =t.forward(testData.get1DSimpleSignal(1, 3, frameWidth, discretization),128);
 //        double[] data = math.convolve(testData.get1DSignal(100, 200, frameWidth, discretization), math.lpf(70, step, 128));
 
 //        double[] data = math.convolve(testData.get1DSignal(100, 200, 32768, 10000), math.lpf(70, 1./10000, 32));
@@ -50,7 +83,7 @@ public class LowPassFilterTest {
             serie.add(startPosition, data[i], "");
             startPosition += step;
         }
-        JFreeChart chart = ChartFactory.createXYLineChart("", "t,c", "g, м/c^2", serie);
+        JFreeChart chart = ChartFactory.createXYLineChart("", "t,c", "wave", serie);
         chart.removeLegend();
         chart.setAntiAlias(false);
 

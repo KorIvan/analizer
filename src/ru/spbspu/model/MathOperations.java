@@ -3,17 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.ivan.model;
+package ru.spbspu.model;
 
+import java.util.Arrays;
+import java.util.function.Function;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
-/**
- *
- * @author float
- */
+
 public class MathOperations implements IMathOperations {
 
     /**
@@ -49,33 +48,10 @@ public class MathOperations implements IMathOperations {
         for (int i = 0; i < SFT.length; i++) {
             SFT[i] = transformed[i].abs();
         }
-        double[] output = new double[SFT.length / 2];
-        for (int i = 0; i < output.length; i++) {
-            output[i] = SFT[i + 2];
-        }
-        return output;
-        //FastCosineTransformer rfft = new FastCosineTransformer(DctNormalization.STANDARD_DCT_I);
-        //rfft.transform(arrDouble, TransformType.FORWARD);
+        return Arrays.copyOfRange(SFT, 2, SFT.length / 2);
     }
 
-//    public double[] transformFourier(float[] SFT) {
-//        double[] input = new double[SFT.length];
-//        for (int i = 0; i < input.length; i++) {
-//            input[i] = SFT[i];
-//        }
-//        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.UNITARY);
-//        Complex[] transformed = fft.transform(input, TransformType.FORWARD);
-//        for (int i = 0; i < SFT.length; i++) {
-//            input[i] = transformed[i].abs();
-//        }
-//        double[] output = new double[SFT.length / 2];
-//        for (int i = 0; i < output.length; i++) {
-//            output[i] = input[i + 2];
-//        }
-//        return output;
-//        //FastCosineTransformer rfft = new FastCosineTransformer(DctNormalization.STANDARD_DCT_I);
-//        //rfft.transform(arrDouble, TransformType.FORWARD);
-//    }
+
     @Override
     public double[] HanningWindow(double[] signalIn, int size) {
         double[] toFFT = new double[size];
@@ -178,7 +154,8 @@ public class MathOperations implements IMathOperations {
         mean = Math.pow(temp / data.length, 0.5);
         return mean;
     }
- public double[] convolve(double[] d1, double[] d2) {
+
+    public double[] convolve(double[] d1, double[] d2) {
         double[] result = new double[d1.length + d2.length - 1];
         for (int i = 0; i < result.length; i++) {
             double temp = 0;
@@ -196,7 +173,7 @@ public class MathOperations implements IMathOperations {
         }
         return result;
     }
- 
+
     public double[] lpf(double fCut, double dt, int m) {
         double[] d = {0.35577019, 0.2436983, 0.07211497, 0.00630165};
         double[] w = new double[m + 1];
@@ -232,5 +209,23 @@ public class MathOperations implements IMathOperations {
             h[w.length + i - 1] = w[i];
         }
         return h;
+    }
+
+//    def Rxy(x, y, i, start 
+//
+//    = 0):
+//    s = 0
+//    for j in range(start, len(x)):
+//        if (i+j >= len(y)):
+//            return s
+//        s += x[j]*y[i+j]
+//    return s
+    public double [] crossCorrelationCoefficient(double[] wavelet, double[] signal) {
+        double [] coeffs=new double[signal.length/wavelet.length];
+        int index=0;
+        double coeff = 0;
+        int j = 0;;
+        Function<Double, Double> f = c -> c += wavelet[j] * signal[index + j];
+        return coeffs;
     }
 }

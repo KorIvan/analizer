@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.ivan.model;
+package ru.spbspu.model;
 
 import java.awt.Graphics;
 import java.awt.Image;

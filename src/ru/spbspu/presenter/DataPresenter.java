@@ -3,8 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.ivan.presenter;
+package ru.spbspu.presenter;
 
+import ru.spbspu.model.SpectrogramPanel;
+import ru.spbspu.model.IMathOperations;
+import ru.spbspu.model.IDataLoader;
+import ru.spbspu.model.DataLoader;
+import ru.spbspu.model.ISpectrogramPanel;
+import ru.spbspu.model.MathOperations;
+import ru.spbspu.model.IAudio;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -17,17 +24,13 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.JPanel;
 import jwave.Transform;
+import jwave.transforms.AncientEgyptianDecomposition;
 import jwave.transforms.FastWaveletTransform;
-import jwave.transforms.wavelets.haar.Haar1;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.XYPlot;
+import jwave.transforms.wavelets.daubechies.Daubechies20;
 import org.jfree.data.Range;
-import org.jfree.data.xy.CategoryTableXYDataset;
 
-import ru.ivan.model.*;
-import ru.ivan.viewer.IDataView;
+
+import ru.spbspu.viewer.IDataView;
 
 /**
  *
@@ -42,16 +45,16 @@ public class DataPresenter implements IDataPresenter {
     private double maxValueInFFTGraph = 0;
     private int size;
     private double maxValueSpec;
-    private StdAudio _audio;
+    private IAudio _audio;
     private IMathOperations _math;
     private double min;
     private double max;
     private final static int LIMIT_CONST = 1;
 
-    public DataPresenter(IDataView viewer) {
+    public DataPresenter(IDataView viewer, IDataLoader loader, IMathOperations math, IAudio audio) {
         _model = new DataLoader();
         _viewer = viewer;
-        _audio = new StdAudio();
+        _audio = audio;
         _math = new MathOperations();
     }
 
@@ -206,7 +209,12 @@ public class DataPresenter implements IDataPresenter {
 
     @Override
     public Image getSpectrogram(int position, int frame, int window, double limit) {
-        double[][] temp = doSFTForSpectrogram(position, frame, window);
+        double[][] temp = null;
+        if (_viewer.getTransformationType().equals("fourier")) {
+            temp = doSFTForSpectrogram(position, frame, window);
+        } else if (_viewer.getTransformationType().equals("wavelet")) {
+            temp = doDWTForSpectrogram(position, frame, window);
+        }
         double[][] data = new double[temp.length][(int) (temp[0].length * limit)];
 
 //       System.arraycopy(temp, 0, data, 0, data[0].length);
@@ -229,8 +237,15 @@ public class DataPresenter implements IDataPresenter {
         return _spectrogram.getSpectrogram();
     }
 
+    /**
+     * Дискретное вейвлет преобразование
+     *
+     * @param window
+     * @return
+     */
     private double[][] doWaveletTransformFullSpectrogram(int window) {
-        Transform t = new Transform(new FastWaveletTransform(new Haar1()));
+        Transform t = new Transform(new AncientEgyptianDecomposition(
+                new FastWaveletTransform(new Daubechies20())));
         int position = 0;
         int frame = _model.getFullData().length;
         double[][] dataForSpectrogram = new double[frame / window * 2][];
@@ -239,11 +254,29 @@ public class DataPresenter implements IDataPresenter {
             if (dataSource.length % 2 != 0) {
                 break;
             }
-            dataForSpectrogram[j] = t.forward(_math.HammingWindow(dataSource, dataSource.length));
+            dataForSpectrogram[j] = t.forward(dataSource);
+            System.arraycopy(dataForSpectrogram[j], 1, dataForSpectrogram[j], 0, dataForSpectrogram[j].length - 1);
             position += window / 2;
         }
         return dataForSpectrogram;
     }
+//    private double[][] doWaveletTransformFullSpectrogram(int window) {
+//        int position = 0;
+//        int frame = _model.getFullData().length;
+//        double[][] dataForSpectrogram = fromComplexToModule((ComplexNumber[][]) CWT.cWT(_model.getFullData(), 1.0 / _viewer.getDiscretization(), CWT.Wavelet.Morlet, 15, 1.0 / _viewer.getDiscretization(), 0.5, 100).get(0));
+//
+//        return dataForSpectrogram;
+//    }
+//
+//    private double[][] fromComplexToModule(ComplexNumber[][] input) {
+//        double[][] output = new double[input.length][input[0].length];
+//        for (int i = 0; i < input.length; i++) {
+//            for (int j = 0; j < output[i].length; j++) {
+//                output[i][j] = Math.pow((Math.pow(input[i][j].Imaginary, 2) + Math.pow(input[i][j].Real, 2)), 0.5);
+//            }
+//        }
+//        return output;
+//    }
 
     private double[][] doSFTForSpectrogram(int position, int frame, int window) {
         String windowFunction = _viewer.getWindowFunction();
@@ -261,6 +294,26 @@ public class DataPresenter implements IDataPresenter {
         return dataForSpectrogram;
     }
 
+    private double[][] doDWTForSpectrogram(int position, int frame, int window) {
+        Transform t = new Transform(new AncientEgyptianDecomposition(
+                new FastWaveletTransform(new Daubechies20())));
+        double[][] dataForSpectrogram = new double[frame / window * 2][];
+        for (int j = 0; j < dataForSpectrogram.length; j++) {
+            double[] dataSource = Arrays.copyOfRange(_model.getFullData(), position, position + window);
+            dataForSpectrogram[j] = t.forward(dataSource);
+            System.arraycopy(dataForSpectrogram[j], 1, dataForSpectrogram[j], 0, dataForSpectrogram[j].length - 1);
+            position += window / 2;
+        }
+        return dataForSpectrogram;
+    }
+
+    /**
+     * *
+     * Коэффициент перекрытия окон равен 0.5
+     *
+     * @param window
+     * @return
+     */
     private double[][] doSFTForFullSpectrogram(int window) {
         int position = 0;
         int frame = _model.getFullData().length;
@@ -288,14 +341,9 @@ public class DataPresenter implements IDataPresenter {
             transformed = doSFTForFullSpectrogram(window);
         } else if (_viewer.getTransformationType().equals("wavelet")) {
             transformed = doWaveletTransformFullSpectrogram(window);
-            System.out.println("Wavelet starnarn!!1");
-            System.out.println(transformed);
-            System.out.println("!!! " + transformed.length);
+
         }
         double[][] data = new double[transformed.length][(int) (transformed[0].length * frequencyLimit)];
-//        System.out.println("length must be "+(int) (transformed[0].length * frequencyLimit));
-//        System.out.println("temp length "+transformed[0].length+"temp.length "+transformed.length);
-//        System.out.println("data[0] length "+data[0].length+" data.length "+data.length);
         double limitDouble = 1.0 * limit / LIMIT_CONST;
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[0].length; j++) {
@@ -308,8 +356,6 @@ public class DataPresenter implements IDataPresenter {
         }
         timePositionInFile();
         SpectrogramPanel spectrogram = new SpectrogramPanel(data);
-//        SpectrogramPanel spectrogram = new SpectrogramPanel(data);
-//        _spectrogram = new SpectrogramPanel(data);
         return spectrogram.getScaledSpectrogram();
     }
 
@@ -335,20 +381,58 @@ public class DataPresenter implements IDataPresenter {
 
     @Override
     public void showTestData() {
-        double freq1 = 200;
+         double freq1 = 200;
         double freq2 = 400;
         double freq3 = 800;
         double ampl1 = 2;
         double ampl2 = 1.2;
-        double ampl3 = 1.5;
+        double ampl3 = 1.2;
         Random noise = new Random();
         int N = 5000;
-        double[] signal = new double[32768];
+        double[] signal = new double[1000000];
+        double v1 = 0;
+        double v2 = 0;
+        double v3 = ampl3;
+
+        for (int i = 0; i < signal.length; i++) {
+            double a1 = v1;
+            double a2 = v2;
+            double a3 = v3;
+            double f3 = freq3;
+            if (v1 >= ampl1) {
+                a1 = ampl1;
+            }
+            if (v2 >= ampl2) {
+                a2 = ampl2;
+            }
+            if (v3 <= 0) {
+                a3 = 0;
+            }
+            if (freq3 <= 450) {
+                f3 = 450;
+            }
+            signal[i] = a1 * Math.sin(2 * Math.PI * freq1 * i * 1.0 / N)
+                    + a2 * Math.sin(2 * Math.PI * freq2 * i * 1.0 / N)
+                    + a3 * Math.sin(2 * Math.PI * f3 * i * 1.0 / N);
+            v1 += 0.00001;
+            v2 += 0.00005;
+            v3 -= 0.00004;
+            freq3 -= 0.01;
+        }
+        _model.setFullData(signal);
+      
+    }
+
+    @Override
+    public void showTestData2(double freq1, double freq2, double freq3, double ampl1,
+            double ampl2, double ampl3, int discretization, int length) {
+  
+        double[] signal = new double[length];
         for (int i = 0; i < signal.length; i++) {
 
-            signal[i] = ampl1 * Math.sin(2 * Math.PI * freq1 * i * 1.0 / N)
-                    + ampl2 * Math.sin(2 * Math.PI * freq2 * i * 1.0 / N)
-                    + ampl3 * Math.sin(2 * Math.PI * freq3 * i * 1.0 / N);
+            signal[i] = ampl1 * Math.sin(2 * Math.PI * freq1 * i * 1.0 / discretization)
+                    + ampl2 * Math.sin(2 * Math.PI * freq2 * i * 1.0 / discretization)
+                    + ampl3 * Math.sin(2 * Math.PI * freq3 * i * 1.0 / discretization);
 //                    + noiseAmpl * 2 * (0.5 - noise.nextDouble());
             //System.out.println(signal[i][j]);
 
@@ -357,45 +441,17 @@ public class DataPresenter implements IDataPresenter {
 
     }
 
+    /**
+     * *
+     * Использование фильтра низких частот
+     *
+     * @param input - входной массив данных
+     * @param freqLimit - полоча пропуская фильтра
+     * @return - массив данных, обработанный фильтром
+     */
     @Override
-    public void showTestData2() {
-double freq1 = 200;
-        double freq2 = 400;
-        double freq3 = 800;
-        double ampl1 = 2;
-        double ampl2 = 1.2;
-        double ampl3 = 1.2;
-        Random noise = new Random();
-        int N = 5000;
-        double[] signal = new double[32768];
-        double v1=0;
-        double v2=0;
-        double v3=ampl3;
-        
-        for (int i = 0; i < signal.length; i++) {
-            double a1=v1;
-            double a2=v2;
-            double a3=v3;
-            double f3=freq3;
-            if (v1>=ampl1)
-                a1=ampl1;
-            if (v2>=ampl2)
-                a2=ampl2;
-            if (v3<=0)
-                a3=0;
-            if (freq3<=450)
-                f3=450;
-            signal[i] = a1 * Math.sin(2 * Math.PI * freq1 * i * 1.0 / N)
-                    + a2 * Math.sin(2 * Math.PI * freq2 * i * 1.0 / N)
-                    + a3 * Math.sin(2 * Math.PI * f3 * i * 1.0 / N);
-            v1+=0.00001;v2+=0.00005;v3-=0.00004;freq3-=0.01;
-        }
-        _model.setFullData(signal);
+    public double[] lpFilter(double[] input, double freqLimit) {
+        return _math.convolve(input, _math.lpf((int) freqLimit, _viewer.getDiscretization(), 1024));
     }
-
-//    @Override
-//    public double[] lpFilter(double[] input, double freqLimit) {
-//        return _math.convolve(input,_math.lpf((int)freqLimit, _viewer.getDiscretization(), 1024));
-//    }
 
 }

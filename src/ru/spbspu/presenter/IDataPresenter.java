@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.ivan.presenter;
+package ru.spbspu.presenter;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -88,9 +88,10 @@ public interface IDataPresenter {
 
     public void showTestData();
 
-    public void showTestData2();
+    public void showTestData2(double freq1, double freq2, double freq3, double ampl1,
+            double ampl2, double ampl3, int discretization, int length);
 
-//    public double[] lpFilter(double[] input, double freqLimit);
+    public double[] lpFilter(double[] input, double freqLimit);
 
 
 

@@ -1,4 +1,4 @@
-package ru.ivan.model;
+package ru.spbspu.model;
 
 /**
  * ***********************************************************************
@@ -36,7 +36,7 @@ import javax.sound.sampled.*;
  * @author Robert Sedgewick
  * @author Kevin Wayne
  */
-public final class StdAudio {
+public final class StdAudio implements IAudio {
 
     /**
      * The sample rate - 44,100 Hz for CD quality audio.
@@ -93,7 +93,7 @@ public final class StdAudio {
     /**
      * Close standard audio.
      */
-    public static void close() {
+    public void close() {
         line.drain();
         line.stop();
     }
@@ -221,6 +221,7 @@ public final class StdAudio {
     /**
      * Save the double array as a sound file (using .wav or .au format).
      */
+    @Override
     public void save(String filename, double[] input, int sampleRate) {
         // use 16-bit audio, mono, signed PCM, little Endian
 //	AudioFormat format = new AudioFormat(SAMPLE_RATE, 16, 1, true, false);

@@ -342,6 +342,9 @@
                   <Connection code="&quot;energy&quot;" type="code"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="showEnergySpectrumStateChanged"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JRadioButton" name="showFrequencySpectrum">
               <Properties>
@@ -621,10 +624,20 @@
                       </Group>
                       <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jButton2" min="-2" max="-2" attributes="0"/>
-                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="cropBeginningLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="cropBeginningTextField" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
+                              <Component id="LPF" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace pref="843" max="32767" attributes="0"/>
+                      <EmptySpace pref="609" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -635,11 +648,14 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="FourierTest" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="LPF" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="WaveletTest" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cropBeginningLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cropBeginningTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="21" max="32767" attributes="0"/>
                   </Group>
@@ -679,6 +695,197 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
               </Events>
             </Component>
+            <Component class="javax.swing.JCheckBox" name="LPF">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x424;&#x438;&#x43b;&#x44c;&#x442;&#x440; &#x41d;&#x427;"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="cropBeginningLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x41e;&#x431;&#x440;&#x435;&#x437;&#x430;&#x442;&#x44c; &#x43d;&#x430;&#x447;&#x430;&#x43b;&#x43e;:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="cropBeginningTextField">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="jTextField1"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="testDataPanel">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="&#x422;&#x435;&#x441;&#x442;">
+                <Property name="tabTitle" type="java.lang.String" value="&#x422;&#x435;&#x441;&#x442;"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="ampl1Label" min="-2" max="-2" attributes="0"/>
+                          <Component id="ampl2Label" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="ampl3Label" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="ampl1Input" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="ampl2Input" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="ampl3Input" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="freq3Label" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="freq3Input" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="freq1Label" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="freq1Input" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                                      <Component id="discrLabel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="freq2Label" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="freq2Input" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="lengthLabel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lengthInput" min="-2" max="-2" attributes="0"/>
+                                  <Component id="discrInput" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                      <EmptySpace pref="704" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="ampl1Input" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="ampl1Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="freq1Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="freq1Input" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="discrLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="discrInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="ampl2Input" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="ampl2Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="freq2Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="freq2Input" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lengthInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lengthLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="ampl3Input" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="ampl3Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="freq3Label" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="freq3Input" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JTextField" name="ampl1Input">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="10"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="ampl2Input">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="20"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="ampl3Input">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="30"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="ampl1Label">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x410;&#x43c;&#x43f;&#x43b;.1"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="ampl2Label">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x410;&#x43c;&#x43f;&#x43b;.2"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="ampl3Label">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x410;&#x43c;&#x43f;&#x43b;.3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="freq1Label">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x427;&#x430;&#x441;&#x442;.1"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="freq2Label">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x427;&#x430;&#x441;&#x442;.2"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="freq3Label">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x427;&#x430;&#x441;&#x442;.3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="freq1Input">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="100"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="freq2Input">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="200"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="freq3Input">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="300"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="discrLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x414;&#x438;&#x441;&#x43a;&#x440;."/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="discrInput">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="5000"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="lengthInput">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="100000"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lengthLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x414;&#x43b;&#x438;&#x43d;&#x430;"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>
@@ -712,7 +919,7 @@
         <Component class="javax.swing.JButton" name="stop">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ru/ivan/viewer/stop.png"/>
+              <Image iconType="3" name="/ru/spbspu/viewer/stop.png"/>
             </Property>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
@@ -728,7 +935,7 @@
         <Component class="javax.swing.JButton" name="play">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ru/ivan/viewer/playPause.png"/>
+              <Image iconType="3" name="/ru/spbspu/viewer/playPause.png"/>
             </Property>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>

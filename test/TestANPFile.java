@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import ru.ivan.model.DataLoader;
-import ru.ivan.model.IDataLoader;
+import ru.spbspu.model.DataLoader;
+import ru.spbspu.model.IDataLoader;
 
 /**
  *
