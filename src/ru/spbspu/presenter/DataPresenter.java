@@ -29,7 +29,6 @@ import jwave.transforms.FastWaveletTransform;
 import jwave.transforms.wavelets.daubechies.Daubechies20;
 import org.jfree.data.Range;
 
-
 import ru.spbspu.viewer.IDataView;
 
 /**
@@ -331,7 +330,15 @@ public class DataPresenter implements IDataPresenter {
 
     @Override
     public double[] getFourierTransform(int position, int frame, int window) {
-        return _math.transformFourier(getFrameData(position, frame));
+        String windowFunction = _viewer.getWindowFunction();
+
+        if (windowFunction.equalsIgnoreCase("Hann")) {
+            return _math.transformFourier(_math.HanningWindow(getFrameData(position, frame), frame));
+
+        } else if (windowFunction.equalsIgnoreCase("Hamming")) {
+            return _math.transformFourier(_math.HammingWindow(getFrameData(position, frame), frame));
+        }
+        return null;
     }
 
     @Override
@@ -381,7 +388,7 @@ public class DataPresenter implements IDataPresenter {
 
     @Override
     public void showTestData() {
-         double freq1 = 200;
+        double freq1 = 200;
         double freq2 = 400;
         double freq3 = 800;
         double ampl1 = 2;
@@ -420,25 +427,22 @@ public class DataPresenter implements IDataPresenter {
             freq3 -= 0.01;
         }
         _model.setFullData(signal);
-      
+
     }
 
     @Override
     public void showTestData2(double freq1, double freq2, double freq3, double ampl1,
             double ampl2, double ampl3, int discretization, int length) {
-  
+
         double[] signal = new double[length];
         for (int i = 0; i < signal.length; i++) {
 
             signal[i] = ampl1 * Math.sin(2 * Math.PI * freq1 * i * 1.0 / discretization)
                     + ampl2 * Math.sin(2 * Math.PI * freq2 * i * 1.0 / discretization)
                     + ampl3 * Math.sin(2 * Math.PI * freq3 * i * 1.0 / discretization);
-//                    + noiseAmpl * 2 * (0.5 - noise.nextDouble());
-            //System.out.println(signal[i][j]);
 
         }
         _model.setFullData(signal);
-
     }
 
     /**
@@ -450,6 +454,7 @@ public class DataPresenter implements IDataPresenter {
      * @return - массив данных, обработанный фильтром
      */
     @Override
+    @Deprecated
     public double[] lpFilter(double[] input, double freqLimit) {
         return _math.convolve(input, _math.lpf((int) freqLimit, _viewer.getDiscretization(), 1024));
     }

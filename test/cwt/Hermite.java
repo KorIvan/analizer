@@ -1,4 +1,4 @@
-package model.cwt;
+package cwt;
 
 /**
  * //from http://www.alglib.net/specialfunctions/polynomials/hermite.php

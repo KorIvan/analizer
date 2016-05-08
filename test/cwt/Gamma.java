@@ -1,4 +1,4 @@
-package model.cwt;
+package cwt;
 
 /**
  * From: //http://rosettacode.org/wiki/Gamma_function#Java, which sites:

@@ -26,8 +26,8 @@ import ru.spbspu.model.ISpectrogramPanel;
 import ru.spbspu.model.MathOperations;
 import ru.spbspu.model.SpectrogramPanel;
 import ru.spbspu.model.TestData;
-import model.cwt.CWT;
-import model.cwt.ComplexNumber;
+import cwt.CWT;
+import cwt.ComplexNumber;
 
 /**
  *

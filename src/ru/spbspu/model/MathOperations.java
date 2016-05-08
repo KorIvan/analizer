@@ -43,10 +43,13 @@ public class MathOperations implements IMathOperations {
 
     @Override
     public double[] transformFourier(double[] SFT) {
-        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.UNITARY);
+        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
         Complex[] transformed = fft.transform(SFT, TransformType.FORWARD);
         for (int i = 0; i < SFT.length; i++) {
-            SFT[i] = transformed[i].abs();
+//            SFT[i]=transformed[i].abs();
+            SFT[i] = (Math.pow(Math.pow(transformed[i].getReal(), 2)+Math.pow(transformed[i].getImaginary(), 2), 0.5))/SFT.length*2;
+//            System.out.println("SFT length is "+SFT.length
+//            +'\n'+"Transformed length is "+transformed.length);
         }
         return Arrays.copyOfRange(SFT, 2, SFT.length / 2);
     }

@@ -1,4 +1,4 @@
-package model.cwt;
+package cwt;
 
 /**
  * Copyright 2014 Mark Bishop This program is free software: you can

@@ -1,4 +1,4 @@
-package model.cwt;
+package cwt;
 
 /**
  * Author Mark Bishop; 2014

@@ -1,4 +1,4 @@
-package model.cwt;
+package cwt;
 
 /**
  * Based on Robert Sedgwick and Kevin Wayne recursive procedure
